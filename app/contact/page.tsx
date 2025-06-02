@@ -89,7 +89,7 @@ export default function ContactPage() {
               </div>
             </div>
             <Link href="/" className="text-2xl font-bold">
-              <span className="text-primary">Fans</span>be
+            <img src="/fanlogo.svg" alt="Logo" className="w-36 h-auto object-contain" />
             </Link>
           </div>
         </div>
