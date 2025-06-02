@@ -44,51 +44,50 @@ export default function Footer({ variant = "default" }: FooterProps) {
 
   if (variant === "login") {
     return (
-      <div className="flex items-center space-x-4 text-sm">
-        <div className="flex items-center space-x-4 mr-[70px]">
-  {/* Copyright */}
-  <span className="text-white/60 text-xs">©2025 OnlyFans</span>
+      <div className="flex items-center justify-end w-full text-sm gap-4">
+        <div className="flex items-center space-x-4 mr-[130px]">
+          {/* Copyright */}
+          <span className="text-white/60 text-xs">©2025 OnlyFans</span>
 
-{/* About Dropdown */}
-<div className="relative">
-  <button
-    className="text-white/70 hover:text-white flex items-center space-x-1 text-xs"
-    onMouseEnter={() => setAboutOpen(true)}
-    onMouseLeave={() => setAboutOpen(false)}
-  >
-    <span>About</span>
-    {aboutOpen ? <ChevronUp className="h-3 w-3" /> : <ChevronDown className="h-3 w-3" />}
-  </button>
-
-  <AnimatePresence>
-    {aboutOpen && (
-      <motion.div
-        initial={{ opacity: 0, y: 10 }}
-        animate={{ opacity: 1, y: 0 }}
-        exit={{ opacity: 0, y: 10 }}
-        transition={{ duration: 0.2 }}
-        className="absolute bottom-full mb-2 right-0 bg-zinc-800 rounded-lg shadow-xl p-4 min-w-[280px] z-50 max-h-80 overflow-y-auto"
-        onMouseEnter={() => setAboutOpen(true)}
-        onMouseLeave={() => setAboutOpen(false)}
-      >
-        <div className="grid grid-cols-2 gap-2">
-          {aboutMenuItems.map((item) => (
-            <Link
-              key={item.name}
-              href={item.href}
-              className="block px-3 py-2 rounded hover:bg-zinc-700 text-white/80 hover:text-white transition-colors text-sm"
+          {/* About Dropdown */}
+          <div className="relative">
+            <button
+              className="text-white/70 hover:text-white flex items-center space-x-1 text-xs"
+              onMouseEnter={() => setAboutOpen(true)}
+              onMouseLeave={() => setAboutOpen(false)}
             >
-              {item.name}
-            </Link>
-          ))}
+              <span>About</span>
+              {aboutOpen ? <ChevronUp className="h-3 w-3" /> : <ChevronDown className="h-3 w-3" />}
+            </button>
+
+            <AnimatePresence>
+              {aboutOpen && (
+                <motion.div
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: 10 }}
+                  transition={{ duration: 0.2 }}
+                  className="absolute bottom-full mb-2 right-0 bg-zinc-800 rounded-lg shadow-xl p-4 min-w-[280px] z-50 max-h-80 overflow-y-auto"
+                  onMouseEnter={() => setAboutOpen(true)}
+                  onMouseLeave={() => setAboutOpen(false)}
+                >
+                  <div className="grid grid-cols-2 gap-2 ml-[20px]">
+                    {aboutMenuItems.map((item) => (
+                      <Link
+                        key={item.name}
+                        href={item.href}
+                        className="block px-3 py-2 rounded hover:bg-zinc-700 text-white/80 hover:text-white transition-colors text-sm"
+                      >
+                        {item.name}
+                      </Link>
+                    ))}
+                  </div>
+                  <div className="absolute top-full right-4 w-0 h-0 border-l-[8px] border-l-transparent border-r-[8px] border-r-transparent border-t-[8px] border-t-zinc-800"></div>
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </div>
         </div>
-        <div className="absolute top-full right-4 w-0 h-0 border-l-[8px] border-l-transparent border-r-[8px] border-r-transparent border-t-[8px] border-t-zinc-800"></div>
-      </motion.div>
-    )}
-  </AnimatePresence>
-</div>
-        </div>
-      
 
         {/* Language Selector */}
         <div className="relative">

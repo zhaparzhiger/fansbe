@@ -177,12 +177,12 @@ export default function LoginPage() {
   const currentModel = models[currentSlide]
 
   return (
-    <div className="min-h-screen flex flex-col relative">
-      <main className="flex-grow flex flex-col md:flex-row min-h-screen">
+    <div className="min-h-screen flex flex-col relative bg-black">
+      <main className="flex-grow flex flex-col md:flex-row min-h-screen md:justify-center md:gap-4 md:items-center">
         {/* Left Side - Slider with Black Background */}
         <div
           id="slider-container"
-          className="w-full md:w-1/2 h-[40vh] md:h-screen relative bg-black flex items-center justify-center select-none"
+          className="w-full md:w-[40%] md:max-w-lg h-[40vh] md:h-screen relative bg-black flex items-center justify-center select-none"
           style={{ userSelect: "none", cursor: isDragging ? "grabbing" : "grab" }}
         >
           <div className="flex flex-col items-center justify-center max-w-md mx-auto px-6">
@@ -263,8 +263,8 @@ export default function LoginPage() {
         </div>
 
         {/* Right Side - Authentication Form (Dark Theme) */}
-        <div className="w-full md:w-1/2 bg-zinc-900 flex items-center justify-center relative min-h-screen">
-          <div className="flex flex-col items-center justify-center max-w-md mx-auto px-6 md:px-12">
+        <div className="w-full md:w-[40%] md:max-w-lg bg-black flex items-center justify-center relative min-h-screen">
+          <div className="flex flex-col items-center justify-center max-w-lg mx-auto px-6 md:px-12">
             {/* Logo - aligned with image */}
             <div className="flex justify-center">
               <img src="/fanlogo.svg" alt="Logo" className="w-48 h-auto object-contain" />
@@ -347,7 +347,7 @@ export default function LoginPage() {
 
                     <Button
                       type="button"
-                      variant="outline" 
+                      variant="outline"
                       className="w-full py-3 rounded-lg bg-blue-600 hover:bg-blue-700 text-white border-blue-600 text-sm flex items-center justify-center"
                     >
                       <svg
@@ -393,7 +393,7 @@ export default function LoginPage() {
             </div>
 
             {/* Footer - positioned at the same level as navigation dots */}
-            <div className="flex justify-end w-full mb-[70px]">
+            <div className="flex justify-between w-full mb-[60px]">
               <Footer variant="login" />
             </div>
           </div>
