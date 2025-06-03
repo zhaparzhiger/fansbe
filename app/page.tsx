@@ -375,7 +375,7 @@ export default function LoginPage() {
             </div>
 
             {/* Form Section */}
-            <div className="w-full mb-8">
+            <div className="w-full max-w-sm mx-auto mb-8">
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
@@ -383,10 +383,7 @@ export default function LoginPage() {
                 className="w-full"
               >
                 <form onSubmit={handleSubmit} className="space-y-4 relative">
-                  <div className="space-y-1">
-                    <label htmlFor="email" className="block text-sm font-medium text-white/80">
-                      Электронная почта
-                    </label>
+                  <div className="space-y-4">
                     <input
                       id="email"
                       name="email"
@@ -395,14 +392,9 @@ export default function LoginPage() {
                       onChange={handleInputChange}
                       required
                       className="w-full px-4 py-3 rounded-lg bg-zinc-800 border border-zinc-700 text-white focus:outline-none focus:ring-2 focus:ring-primary text-sm"
-                      placeholder="wcpdfbww@demainmail.com"
+                      placeholder="Электронная почта"
                     />
-                  </div>
 
-                  <div className="space-y-1">
-                    <label htmlFor="password" className="block text-sm font-medium text-white/80">
-                      Пароль
-                    </label>
                     <div className="relative">
                       <input
                         id="password"
@@ -412,7 +404,7 @@ export default function LoginPage() {
                         onChange={handleInputChange}
                         required
                         className="w-full px-4 py-3 rounded-lg bg-zinc-800 border border-zinc-700 text-white focus:outline-none focus:ring-2 focus:ring-primary pr-10 text-sm"
-                        placeholder="••••••••"
+                        placeholder="Пароль"
                       />
                       <button
                         type="button"
@@ -441,7 +433,7 @@ export default function LoginPage() {
                     </Link>
                   </div>
 
-                  <div className="space-y-3 mt-6">
+                  <div className="space-y-3 mt-6 max-w-sm mx-auto">
                     <Button
                       type="button"
                       variant="outline"
@@ -485,23 +477,22 @@ export default function LoginPage() {
                     </Button>
                   </div>
 
-                  <div className="text-left text-xs text-white/60 leading-relaxed mt-4">
-                    Входя в систему и используя OnlyFans, вы соглашаетесь с нашими{" "}
+                  <div className="text-left text-[11px] text-white/60 leading-tight mt-4 max-w-sm">
+                    Используя Fansbe, Вы подтверждаете, что Вам не менее 18 лет, и Вы принимаете{" "}
                     <Link href="/terms" className="text-primary hover:underline">
-                      Условиями обслуживания
+                      Условия использования
                     </Link>{" "}
                     и{" "}
                     <Link href="/privacy" className="text-primary hover:underline">
-                      Политикой конфиденциальности
-                    </Link>{" "}
-                    и подтверждаете, что вам не менее 18 лет.
+                      Политику конфиденциальности
+                    </Link>
                   </div>
                 </form>
               </motion.div>
             </div>
 
             {/* Footer - positioned at the same level as navigation dots */}
-            <div className="flex justify-between w-full mt-[15px]">
+            <div className="flex justify-between w-full mt-[90px]">
               <Footer variant="login" />
             </div>
           </div>

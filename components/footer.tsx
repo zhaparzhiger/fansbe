@@ -2,7 +2,7 @@
 
 import { useState } from "react"
 import Link from "next/link"
-import { ChevronDown, ChevronUp, Globe, MessageCircle } from "lucide-react"
+import { ChevronDown, ChevronUp, Globe, MessageCircle, ToggleLeft } from "lucide-react"
 import { motion, AnimatePresence } from "framer-motion"
 
 interface FooterProps {
@@ -37,42 +37,16 @@ export default function Footer({ variant = "default" }: FooterProps) {
     { code: "ja", name: "日本語" },
   ]
 
-  const scrollbarStyles = `
-  /* Custom scrollbar styles */
-  .scrollbar-thin::-webkit-scrollbar {
-    width: 0.5px;
-  }
-  
-  .scrollbar-thin::-webkit-scrollbar-track {
-    background: transparent;
-  }
-  
-  .scrollbar-thin::-webkit-scrollbar-thumb {
-    background-color: rgba(6, 182, 212, 0.5);
-    border-radius: 0;
-  }
-  
-  .scrollbar-thin::-webkit-scrollbar-thumb:hover {
-    background-color: rgba(6, 182, 212, 0.7);
-  }
-`
-
   if (variant === "login") {
     return (
       <div className="flex items-center justify-end w-full text-sm gap-4">
-        {variant === "login" && (
-          <style jsx global>
-            {scrollbarStyles}
-          </style>
-        )}
-        <div className="flex items-center space-x-4 mr-[130px]">
+        <div className="flex items-center space-x-4 mr-[100px]">
           {/* Copyright */}
           <div className="flex items-center whitespace-nowrap">
-            <span className="text-white/60 text-[12px] whitespace-nowrap">©2025 Fansbe</span>
-            <span className="text-white/60 text-[9px] mx-1">•</span>
+          <span className="text-white/60 text-[12px] whitespace-nowrap mr-[5px]">©2025 Fansbe</span> <span className="text-white/60 text-[9px] mx-1">•</span>
           </div>
           {/* About Dropdown */}
-          <div className="relative">
+          <div className="relative right-[10px]">
             <button
               className="text-white/70 hover:text-white flex items-center space-x-1 text-xs"
               onMouseEnter={() => setAboutOpen(true)}
@@ -89,7 +63,7 @@ export default function Footer({ variant = "default" }: FooterProps) {
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, y: 10 }}
                   transition={{ duration: 0.2 }}
-                  className="absolute bottom-full mb-2 right-[-80px] bg-zinc-800 rounded-lg shadow-xl p-3 w-[420px] z-50"
+                  className="absolute bottom-full mb-2 right-[-255px] bg-zinc-800 rounded-lg shadow-xl p-3 w-[420px] z-50"
                   onMouseEnter={() => setAboutOpen(true)}
                   onMouseLeave={() => setAboutOpen(false)}
                 >
@@ -135,19 +109,19 @@ export default function Footer({ variant = "default" }: FooterProps) {
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: 10 }}
                 transition={{ duration: 0.2 }}
-                className="absolute bottom-full mb-2 right-0 bg-zinc-900 rounded-none shadow-xl py-1 min-w-[120px] z-50 max-h-48 overflow-y-auto scrollbar-thin"
+                className="absolute bottom-full mb-2 right-0 bg-zinc-800 rounded-lg shadow-xl p-2 min-w-[150px] z-50 max-h-60 overflow-y-auto"
               >
-                <div className="space-y-0">
+                <div className="space-y-1">
                   {languages.map((lang) => (
                     <button
                       key={lang.code}
-                      className="block w-full text-left px-4 py-2 text-white/80 hover:text-white hover:bg-zinc-800 transition-colors text-sm font-normal"
+                      className="block w-full text-left px-3 py-2 rounded hover:bg-zinc-700 text-white/80 hover:text-white transition-colors text-sm"
                     >
                       {lang.name}
                     </button>
                   ))}
                 </div>
-                <div className="absolute top-full right-4 w-0 h-0 border-l-[8px] border-l-transparent border-r-[8px] border-r-transparent border-t-[8px] border-t-zinc-900"></div>
+                <div className="absolute top-full right-4 w-0 h-0 border-l-[8px] border-l-transparent border-r-[8px] border-r-transparent border-t-[8px] border-t-zinc-800"></div>
               </motion.div>
             )}
           </AnimatePresence>
@@ -176,117 +150,115 @@ export default function Footer({ variant = "default" }: FooterProps) {
   }
 
   return (
-    <>
-      <style jsx global>
-        {scrollbarStyles}
-      </style>
-      <footer className="bg-zinc-900/90 border-t border-zinc-800 backdrop-blur-sm">
-        <div className="container mx-auto px-4 py-6 flex flex-wrap items-center justify-between">
-          <div className="flex items-center space-x-8">
-            {/* Language Selector */}
-            <div className="relative">
-              <button
-                className="text-white/70 hover:text-white flex items-center space-x-1"
-                onClick={() => setLanguageOpen(!languageOpen)}
-              >
-                <Globe className="h-4 w-4" />
-                <span>Language</span>
-              </button>
-
-              <AnimatePresence>
-                {languageOpen && (
-                  <motion.div
-                    initial={{ opacity: 0, y: 10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0, y: 10 }}
-                    className="absolute bottom-full mb-2 left-0 bg-zinc-900 rounded-none shadow-xl py-1 min-w-[120px] z-50 max-h-48 overflow-y-auto scrollbar-thin"
-                  >
-                    <div className="space-y-0">
-                      {languages.map((lang) => (
-                        <button
-                          key={lang.code}
-                          className="block w-full text-left px-4 py-2 text-white/80 hover:text-white hover:bg-zinc-800 transition-colors text-sm font-normal"
-                        >
-                          {lang.name}
-                        </button>
-                      ))}
-                    </div>
-                    <div className="absolute top-full left-4 w-0 h-0 border-l-[8px] border-l-transparent border-r-[8px] border-r-transparent border-t-[8px] border-t-zinc-900"></div>
-                  </motion.div>
-                )}
-              </AnimatePresence>
-            </div>
-
-            {/* Contact Link */}
-            <Link
-              href="/contact"
-              className="text-white/70 hover:text-white transition-colors flex items-center space-x-1"
+    <footer className="bg-zinc-900/90 border-t border-zinc-800 backdrop-blur-sm">
+      <div className="container mx-auto px-4 py-6 flex flex-wrap items-center justify-between">
+        <div className="flex items-center space-x-8">
+          {/* Language Selector */}
+          <div className="relative">
+               {/* Theme Switcher Icon */}
+        
+            <button
+              className="text-white/70 hover:text-white flex items-center space-x-1"
+              onClick={() => setLanguageOpen(!languageOpen)}
             >
-              <MessageCircle className="h-4 w-4" />
-              <span>Contact</span>
-            </Link>
+              <Globe className="h-4 w-4" />
+              <span>Language</span>
+            </button>
 
-            {/* About Dropdown */}
-            <div className="relative">
-              <button
-                className="text-white/70 hover:text-white flex items-center space-x-1"
-                onMouseEnter={() => setAboutOpen(true)}
-                onMouseLeave={() => setAboutOpen(false)}
-              >
-                <span>About</span>
-                {aboutOpen ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
-              </button>
-
-              <AnimatePresence>
-                {aboutOpen && (
-                  <motion.div
-                    initial={{ opacity: 0, y: 10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0, y: 10 }}
-                    transition={{ duration: 0.2 }}
-                    className="absolute bottom-full mb-2 left-1/2 -translate-x-1/2 bg-zinc-800 rounded-lg shadow-xl p-3 w-[420px] z-50"
-                    onMouseEnter={() => setAboutOpen(true)}
-                    onMouseLeave={() => setAboutOpen(false)}
-                  >
-                    <div className="grid grid-cols-2 gap-1 mb-3">
-                      {aboutMenuItems.map((item) => (
-                        <Link
-                          key={item.name}
-                          href={item.href}
-                          className="block px-2 py-1.5 rounded hover:bg-zinc-700 text-white/80 hover:text-white transition-colors text-xs"
-                        >
-                          {item.name}
-                        </Link>
-                      ))}
-                    </div>
-
-                    {/* Company Address */}
-                    <div className="border-t border-zinc-700 pt-2 mt-2">
-                      <p className="text-white/60 text-[10px] text-center whitespace-nowrap overflow-hidden text-ellipsis">
-                        RM 511, 5/F, MING SANG IND BLDG, 19-21 HING YIP STREET, KWUN TONG HONG KONG
-                      </p>
-                    </div>
-
-                    <div className="absolute top-full left-1/2 -translate-x-1/2 w-0 h-0 border-l-[8px] border-l-transparent border-r-[8px] border-r-transparent border-t-[8px] border-t-zinc-800"></div>
-                  </motion.div>
-                )}
-              </AnimatePresence>
-            </div>
-
-            <Link href="/terms" className="text-white/70 hover:text-white transition-colors">
-              Terms
-            </Link>
-
-            <Link href="/privacy" className="text-white/70 hover:text-white transition-colors">
-              Privacy
-            </Link>
+            <AnimatePresence>
+              {languageOpen && (
+                <motion.div
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: 10 }}
+                  transition={{ duration: 0.2 }}
+                  className="absolute bottom-full mb-2 left-0 bg-zinc-800 rounded-lg shadow-xl p-2 min-w-[150px] z-50 max-h-60 overflow-y-auto"
+                >
+                  <div className="space-y-1">
+                    {languages.map((lang) => (
+                      <button
+                        key={lang.code}
+                        className="block w-full text-left px-3 py-2 rounded hover:bg-zinc-700 text-white/80 hover:text-white transition-colors text-sm"
+                      >
+                        {lang.name}
+                      </button>
+                    ))}
+                  </div>
+                  <div className="absolute top-full left-4 w-0 h-0 border-l-[8px] border-l-transparent border-r-[8px] border-r-transparent border-t-[8px] border-t-zinc-800"></div>
+                </motion.div>
+              )}
+            </AnimatePresence>
           </div>
 
-          <div className="text-white/60 text-sm mt-4 md:mt-0">
-            &copy; {new Date().getFullYear()} Fansbe. All rights reserved.
+          {/* Contact Link */}
+          <Link
+            href="/contact"
+            className="text-white/70 hover:text-white transition-colors flex items-center space-x-1"
+          >
+            <MessageCircle className="h-4 w-4" />
+            <span>Contact</span>
+          </Link>
+
+          {/* About Dropdown */}
+          <div className="relative">
+            <button
+              className="text-white/70 hover:text-white flex items-center space-x-1"
+              onMouseEnter={() => setAboutOpen(true)}
+              onMouseLeave={() => setAboutOpen(false)}
+            >
+              <span>About</span>
+              {aboutOpen ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
+            </button>
+
+            <AnimatePresence>
+              {aboutOpen && (
+                <motion.div
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: 10 }}
+                  transition={{ duration: 0.2 }}
+                  className="absolute bottom-full mb-2 left-1/2 -translate-x-1/2 bg-zinc-800 rounded-lg shadow-xl p-3 w-[420px] z-50"
+                  onMouseEnter={() => setAboutOpen(true)}
+                  onMouseLeave={() => setAboutOpen(false)}
+                >
+                  <div className="grid grid-cols-2 gap-1 mb-3">
+                    {aboutMenuItems.map((item) => (
+                      <Link
+                        key={item.name}
+                        href={item.href}
+                        className="block px-2 py-1.5 rounded hover:bg-zinc-700 text-white/80 hover:text-white transition-colors text-xs"
+                      >
+                        {item.name}
+                      </Link>
+                    ))}
+                  </div>
+
+                  {/* Company Address */}
+                  <div className="border-t border-zinc-700 pt-2 mt-2">
+                    <p className="text-white/60 text-[10px] text-center whitespace-nowrap overflow-hidden text-ellipsis">
+                      RM 511, 5/F, MING SANG IND BLDG, 19-21 HING YIP STREET, KWUN TONG HONG KONG
+                    </p>
+                  </div>
+
+                  <div className="absolute top-full left-1/2 -translate-x-1/2 w-0 h-0 border-l-[8px] border-l-transparent border-r-[8px] border-r-transparent border-t-[8px] border-t-zinc-800"></div>
+                </motion.div>
+              )}
+            </AnimatePresence>
           </div>
+
+          <Link href="/terms" className="text-white/70 hover:text-white transition-colors">
+            Terms
+          </Link>
+
+          <Link href="/privacy" className="text-white/70 hover:text-white transition-colors">
+            Privacy
+          </Link>
         </div>
-      </footer>
-    </>
+
+        <div className="text-white/60 text-sm mt-4 md:mt-0">
+          &copy; {new Date().getFullYear()} Fansbe. All rights reserved.
+        </div>
+      </div>
+    </footer>
   )
 }
