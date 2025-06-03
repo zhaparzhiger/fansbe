@@ -59,29 +59,39 @@ export default function LoginPage() {
   const [isDragging, setIsDragging] = useState(false)
   const [startX, setStartX] = useState(0)
   const [currentX, setCurrentX] = useState(0)
+  const [dragOffset, setDragOffset] = useState(0)
 
-  // Auto rotate slider every 7 seconds
+  // Check if we're at the boundaries
+  const isFirstSlide = currentSlide === 0
+  const isLastSlide = currentSlide === models.length - 1
+
+  // Auto rotate slider every 7 seconds (but stop at the last slide)
   useEffect(() => {
+    if (isDragging || isLastSlide) return // Don't auto-rotate while dragging or at last slide
+
     const interval = setInterval(() => {
-      setCurrentSlide((prev) => (prev + 1) % models.length)
+      setCurrentSlide((prev) => {
+        if (prev >= models.length - 1) return prev // Stop at last slide
+        return prev + 1
+      })
     }, 7000)
 
     return () => clearInterval(interval)
-  }, [])
+  }, [isDragging, isLastSlide])
 
   // Keyboard navigation
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === "ArrowLeft") {
-        setCurrentSlide((prev) => (prev - 1 + models.length) % models.length)
-      } else if (e.key === "ArrowRight") {
-        setCurrentSlide((prev) => (prev + 1) % models.length)
+      if (e.key === "ArrowLeft" && !isFirstSlide) {
+        setCurrentSlide((prev) => prev - 1)
+      } else if (e.key === "ArrowRight" && !isLastSlide) {
+        setCurrentSlide((prev) => prev + 1)
       }
     }
 
     window.addEventListener("keydown", handleKeyDown)
     return () => window.removeEventListener("keydown", handleKeyDown)
-  }, [])
+  }, [isFirstSlide, isLastSlide])
 
   // Wheel/scroll navigation
   useEffect(() => {
@@ -92,10 +102,10 @@ export default function LoginPage() {
 
       clearTimeout(scrollTimeout)
       scrollTimeout = setTimeout(() => {
-        if (e.deltaY > 0) {
-          setCurrentSlide((prev) => (prev + 1) % models.length)
-        } else {
-          setCurrentSlide((prev) => (prev - 1 + models.length) % models.length)
+        if (e.deltaY > 0 && !isLastSlide) {
+          setCurrentSlide((prev) => prev + 1)
+        } else if (e.deltaY < 0 && !isFirstSlide) {
+          setCurrentSlide((prev) => prev - 1)
         }
       }, 50)
     }
@@ -105,9 +115,9 @@ export default function LoginPage() {
       leftSide.addEventListener("wheel", handleWheel, { passive: false })
       return () => leftSide.removeEventListener("wheel", handleWheel)
     }
-  }, [])
+  }, [isFirstSlide, isLastSlide])
 
-  // Mouse swipe navigation
+  // Mouse swipe navigation with real-time feedback
   useEffect(() => {
     const handleMouseDown = (e: MouseEvent) => {
       setIsDragging(true)
@@ -118,27 +128,40 @@ export default function LoginPage() {
     const handleMouseMove = (e: MouseEvent) => {
       if (!isDragging) return
       setCurrentX(e.clientX)
+      const deltaX = e.clientX - startX
+
+      // Limit drag offset at boundaries
+      let limitedOffset = deltaX
+      if (isFirstSlide && deltaX > 0) {
+        limitedOffset = Math.min(deltaX, 50) // Limit right drag on first slide
+      }
+      if (isLastSlide && deltaX < 0) {
+        limitedOffset = Math.max(deltaX, -50) // Limit left drag on last slide
+      }
+
+      setDragOffset(limitedOffset)
     }
 
     const handleMouseUp = () => {
       if (!isDragging) return
 
       const deltaX = currentX - startX
-      const threshold = 50 // minimum distance for swipe
+      const threshold = 80 // minimum distance for swipe
 
       if (Math.abs(deltaX) > threshold) {
-        if (deltaX > 0) {
+        if (deltaX > 0 && !isFirstSlide) {
           // Swipe right - go to previous slide
-          setCurrentSlide((prev) => (prev - 1 + models.length) % models.length)
-        } else {
+          setCurrentSlide((prev) => prev - 1)
+        } else if (deltaX < 0 && !isLastSlide) {
           // Swipe left - go to next slide
-          setCurrentSlide((prev) => (prev + 1) % models.length)
+          setCurrentSlide((prev) => prev + 1)
         }
       }
 
       setIsDragging(false)
       setStartX(0)
       setCurrentX(0)
+      setDragOffset(0)
     }
 
     const sliderContainer = document.getElementById("slider-container")
@@ -153,7 +176,67 @@ export default function LoginPage() {
         document.removeEventListener("mouseup", handleMouseUp)
       }
     }
-  }, [isDragging, startX, currentX])
+  }, [isDragging, startX, currentX, isFirstSlide, isLastSlide])
+
+  // Touch swipe navigation
+  useEffect(() => {
+    const handleTouchStart = (e: TouchEvent) => {
+      setIsDragging(true)
+      setStartX(e.touches[0].clientX)
+      setCurrentX(e.touches[0].clientX)
+    }
+
+    const handleTouchMove = (e: TouchEvent) => {
+      if (!isDragging) return
+      e.preventDefault()
+      setCurrentX(e.touches[0].clientX)
+      const deltaX = e.touches[0].clientX - startX
+
+      // Limit drag offset at boundaries
+      let limitedOffset = deltaX
+      if (isFirstSlide && deltaX > 0) {
+        limitedOffset = Math.min(deltaX, 50)
+      }
+      if (isLastSlide && deltaX < 0) {
+        limitedOffset = Math.max(deltaX, -50)
+      }
+
+      setDragOffset(limitedOffset)
+    }
+
+    const handleTouchEnd = () => {
+      if (!isDragging) return
+
+      const deltaX = currentX - startX
+      const threshold = 80
+
+      if (Math.abs(deltaX) > threshold) {
+        if (deltaX > 0 && !isFirstSlide) {
+          setCurrentSlide((prev) => prev - 1)
+        } else if (deltaX < 0 && !isLastSlide) {
+          setCurrentSlide((prev) => prev + 1)
+        }
+      }
+
+      setIsDragging(false)
+      setStartX(0)
+      setCurrentX(0)
+      setDragOffset(0)
+    }
+
+    const sliderContainer = document.getElementById("slider-container")
+    if (sliderContainer) {
+      sliderContainer.addEventListener("touchstart", handleTouchStart, { passive: false })
+      sliderContainer.addEventListener("touchmove", handleTouchMove, { passive: false })
+      sliderContainer.addEventListener("touchend", handleTouchEnd)
+
+      return () => {
+        sliderContainer.removeEventListener("touchstart", handleTouchStart)
+        sliderContainer.removeEventListener("touchmove", handleTouchMove)
+        sliderContainer.removeEventListener("touchend", handleTouchEnd)
+      }
+    }
+  }, [isDragging, startX, currentX, isFirstSlide, isLastSlide])
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target
@@ -167,11 +250,15 @@ export default function LoginPage() {
   }
 
   const nextSlide = () => {
-    setCurrentSlide((prev) => (prev + 1) % models.length)
+    if (!isLastSlide) {
+      setCurrentSlide((prev) => prev + 1)
+    }
   }
 
   const prevSlide = () => {
-    setCurrentSlide((prev) => (prev - 1 + models.length) % models.length)
+    if (!isFirstSlide) {
+      setCurrentSlide((prev) => prev - 1)
+    }
   }
 
   const currentModel = models[currentSlide]
@@ -185,79 +272,96 @@ export default function LoginPage() {
           className="w-full md:w-[40%] md:max-w-lg h-[40vh] md:h-screen relative bg-black flex items-center justify-center select-none"
           style={{ userSelect: "none", cursor: isDragging ? "grabbing" : "grab" }}
         >
+          {/* Previous Arrow - Hidden on first slide */}
+          {/* <button
+            onClick={prevSlide}
+            disabled={isFirstSlide}
+            className={cn(
+              "absolute left-4 top-1/2 -translate-y-1/2 z-10 p-2 rounded-full transition-all duration-300 backdrop-blur-sm",
+              isFirstSlide
+                ? "bg-black/20 text-white/30 cursor-not-allowed"
+                : "bg-black/50 hover:bg-black/70 text-white cursor-pointer",
+            )}
+            aria-label="Previous slide"
+          >
+            <ChevronLeft size={24} />
+          </button> */}
+
+          {/* Next Arrow - Hidden on last slide */}
+          {/* <button
+            onClick={nextSlide}
+            disabled={isLastSlide}
+            className={cn(
+              "absolute right-4 top-1/2 -translate-y-1/2 z-10 p-2 rounded-full transition-all duration-300 backdrop-blur-sm",
+              isLastSlide
+                ? "bg-black/20 text-white/30 cursor-not-allowed"
+                : "bg-black/50 hover:bg-black/70 text-white cursor-pointer",
+            )}
+            aria-label="Next slide"
+          >
+            <ChevronRight size={24} />
+          </button> */}
+
           <div className="flex flex-col items-center justify-center max-w-md mx-auto px-6">
-            {/* Image Section */}
-            <div className="relative mb-8">
-              {models.map((model, index) => (
-                <motion.div
-                  key={model.id}
-                  className={cn(
-                    "absolute inset-0 flex items-center justify-center",
-                    index === currentSlide ? "opacity-100" : "opacity-0",
-                  )}
-                  initial={{ opacity: 0, scale: 1.1 }}
-                  animate={{
-                    opacity: index === currentSlide ? 1 : 0,
-                    scale: index === currentSlide ? 1 : 1.1,
-                  }}
-                  transition={{ duration: 0.8, ease: "easeInOut" }}
-                >
-                  {/* Model Image with Vignette Effect */}
-                  <div className="relative w-80 h-96 model-image-vignette-strong">
-                    <img
-                      src={model.image || "/placeholder.svg"}
-                      alt={model.name}
-                      className="w-full h-full object-cover object-center rounded-lg select-none pointer-events-none"
-                      style={{
-                        userSelect: "none",
-                        WebkitUserSelect: "none",
-                        MozUserSelect: "none",
-                        msUserSelect: "none",
-                      }}
-                      draggable={false}
-                    />
-                  </div>
-                </motion.div>
-              ))}
-              {/* Placeholder for consistent height */}
-              <div className="w-80 h-96"></div>
-            </div>
-
-            {/* Text Section - Directly under image */}
-            <div className="text-center select-none" style={{ userSelect: "none" }}>
-              <motion.div
-                key={currentSlide}
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.6, delay: 0.2 }}
+            {/* Carousel Container - Contains both image and text */}
+            <div className="relative overflow-hidden w-80 mb-8">
+              <div
+                className={cn("flex transition-transform ease-out", isDragging ? "duration-0" : "duration-500")}
+                style={{
+                  transform: `translateX(${-currentSlide * 320 + dragOffset}px)`,
+                  width: `${models.length * 320}px`,
+                }}
               >
-                <h1
-                  className="text-3xl md:text-4xl font-bold text-white mb-4 select-none"
-                  style={{ userSelect: "none" }}
-                >
-                  {currentModel.title}
-                </h1>
-                <p
-                  className="text-white/70 text-sm md:text-base leading-relaxed max-w-sm mx-auto mb-6 select-none"
-                  style={{ userSelect: "none" }}
-                >
-                  {currentModel.description}
-                </p>
-              </motion.div>
+                {models.map((model, index) => (
+                  <div key={model.id} className="w-80 flex-shrink-0 flex flex-col items-center">
+                    {/* Image */}
+                    <div className="relative w-80 h-96 model-image-vignette-strong mb-8">
+                      <img
+                        src={model.image || "/placeholder.svg"}
+                        alt={model.name}
+                        className="w-full h-full object-cover object-center rounded-lg select-none pointer-events-none"
+                        style={{
+                          userSelect: "none",
+                          WebkitUserSelect: "none",
+                          MozUserSelect: "none",
+                          msUserSelect: "none",
+                        }}
+                        draggable={false}
+                      />
+                    </div>
 
-              {/* Navigation dots */}
-              <div className="flex justify-center space-x-2">
-                {models.map((_, index) => (
-                  <button
-                    key={index}
-                    onClick={() => setCurrentSlide(index)}
-                    className={cn(
-                      "w-2 h-2 rounded-full transition-all duration-300",
-                      index === currentSlide ? "bg-white w-6" : "bg-white/50 hover:bg-white/80",
-                    )}
-                  />
+                    {/* Text for this slide */}
+                    <div className="text-center w-full px-4">
+                      <h1
+                        className="text-2xl md:text-3xl font-bold text-white mb-4 select-none"
+                        style={{ userSelect: "none" }}
+                      >
+                        {model.title}
+                      </h1>
+                      <p
+                        className="text-white/70 text-xs leading-relaxed max-w-sm mx-auto mb-6 select-none"
+                        style={{ userSelect: "none" }}
+                      >
+                        {model.description}
+                      </p>
+                    </div>
+                  </div>
                 ))}
               </div>
+            </div>
+
+            {/* Navigation dots - keep these outside the carousel */}
+            <div className="flex justify-center space-x-2 mt-1">
+              {models.map((_, index) => (
+                <button
+                  key={index}
+                  onClick={() => setCurrentSlide(index)}
+                  className={cn(
+                    "w-2 h-2 rounded-full transition-all duration-300",
+                    index === currentSlide ? "bg-white w-6" : "bg-white/50 hover:bg-white/80",
+                  )}
+                />
+              ))}
             </div>
           </div>
         </div>
@@ -327,9 +431,13 @@ export default function LoginPage() {
                     АВТОРИЗУЙТЕСЬ
                   </Button>
 
-                  <div className="text-center mt-4">
+                  <div className="text-center mt-4 flex items-center justify-center space-x-2">
                     <Link href="/forgot-password" className="text-primary text-sm hover:underline">
-                      Забыли пароль? • Подпишитесь на OnlyFans
+                      Забыли пароль?
+                    </Link>
+                    <span className="text-white/50">•</span>
+                    <Link href="/register" className="text-primary text-sm hover:underline">
+                      Регистрация
                     </Link>
                   </div>
 
@@ -393,7 +501,7 @@ export default function LoginPage() {
             </div>
 
             {/* Footer - positioned at the same level as navigation dots */}
-            <div className="flex justify-between w-full mb-[60px]">
+            <div className="flex justify-between w-full mt-[15px]">
               <Footer variant="login" />
             </div>
           </div>
